@@ -38,7 +38,7 @@ type MarkdownFile struct {
 
 // TODO: make these configurable
 var basePath = "/devtools-html/4.0.0/en/"
-var filesDir = "/Users/erikla-deque/src/product-docs-site/packages/devtools-html/content/4.0.0/en"
+var filesDir = "/Users/erikla-deque/src/product-docs-site/packages/devtools-for-web/content/4/en"
 
 func main() {
 
@@ -104,10 +104,11 @@ func readMarkdownFile(filename string) MarkdownFile {
 func writeMarkdownFile(filename string, markdownFile MarkdownFile) {
 
 	// Create temporary files
-	tempFilename1 := filename + randomString(5)
-	tempFilename2 := filename + randomString(5)
+	tempBaseName := filename + randomString(5)
+	originalFilename := tempBaseName + "-orig"
+	newFilename := tempBaseName + "-new"
 
-	file, err := os.Create(tempFilename1)
+	file, err := os.Create(newFilename)
 	yamlEncoder := yaml.NewEncoder(file)
 	yamlEncoder.SetIndent(2)
 
@@ -129,19 +130,19 @@ func writeMarkdownFile(filename string, markdownFile MarkdownFile) {
 	yamlEncoder.Close()
 	file.Close()
 
-	err = os.Rename(filename, tempFilename2) // Rename original file to temporary file
+	err = os.Rename(filename, originalFilename) // Rename original file to temporary file
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = os.Rename(tempFilename1, filename) // Rename new file to original file
+	err = os.Rename(newFilename, filename) // Rename new file to original file
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = os.Remove(tempFilename2) // Finally, remove the original file
+	err = os.Remove(originalFilename) // Finally, remove the original file
 
 	if err != nil {
 		log.Fatal(err)
